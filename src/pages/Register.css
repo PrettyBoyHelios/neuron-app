@@ -21,3 +21,11 @@
 .inputElement {
     margin-top: 25px;
 }
+
+.registerForm {
+    width: 50%;
+    align-content: center;
+    align-self: center;
+    margin: 0 auto;
+    padding-top: 40px;
+}
