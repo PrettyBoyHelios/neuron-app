@@ -17,6 +17,16 @@ const Register = () => {
     const { register, handleSubmit } = useForm<UserRegistration>()
     const navigate = useNavigate()
 
+    let user = localStorage.getItem('user')
+    console.log('value: ', user)
+    if (user === null) {
+        localStorage.setItem('user', '')
+    }
+    if (user !== '') {
+        console.log('user data found: ', user)
+        navigate('/dashboard')
+    }
+
     const onSubmit = handleSubmit(async (data) => {
         alert(JSON.stringify(data))
 
@@ -96,7 +106,11 @@ const Register = () => {
                         <Button type="submit" variant="contained">
                             Register
                         </Button>
-                        <Button variant="contained" onClick={goToLogin}>
+                        <Button
+                            variant="contained"
+                            onClick={goToLogin}
+                            style={{ float: 'right' }}
+                        >
                             Already have an account?
                         </Button>
 
