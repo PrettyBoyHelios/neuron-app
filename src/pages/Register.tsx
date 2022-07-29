@@ -32,7 +32,6 @@ const Register = () => {
     }
 
     const onSubmit = handleSubmit(async (data) => {
-        alert(JSON.stringify(data))
 
         if (data.password !== data.confirmPassword) {
             setErrorMessage("passwords don't match")
@@ -50,10 +49,10 @@ const Register = () => {
                     }
                 )
                 .then((data) => {
-                    console.log('worked! ', data)
+                    localStorage.setItem("user", JSON.stringify(data.data))
+                    navigate("/dashboard")
                 })
                 .catch((error) => {
-                    console.log(error)
                     setErrorMessage(error.response.data.errors)
                     setErrorOpen(true)
                 })
