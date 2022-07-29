@@ -2,19 +2,23 @@ import React from 'react'
 import { useRef, useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
-import { TextField, Button } from '@mui/material'
+import { TextField, Button, IconButton, Snackbar } from '@mui/material'
 import './Register.css'
 import { useNavigate } from 'react-router-dom'
+import CloseIcon from '@mui/icons-material/Close'
 
 type UserRegistration = {
     name: string
     email: string
     phone: string
     password: string
+    confirmPassword: string
 }
 
 const Register = () => {
     const { register, handleSubmit } = useForm<UserRegistration>()
+    const [errorOpen, setErrorOpen] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
     const navigate = useNavigate()
 
     let user = localStorage.getItem('user')
@@ -30,21 +34,62 @@ const Register = () => {
     const onSubmit = handleSubmit(async (data) => {
         alert(JSON.stringify(data))
 
-        await axios.post<UserRegistration>(
-            'http://localhost:8080/register',
-            data,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-            }
-        )
+        if (data.password !== data.confirmPassword) {
+            setErrorMessage("passwords don't match")
+            setErrorOpen(true)
+        } else {
+            await axios
+                .post<UserRegistration>(
+                    'http://localhost:8080/register',
+                    data,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                        },
+                    }
+                )
+                .then((data) => {
+                    console.log('worked! ', data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    setErrorMessage(error.response.data.errors)
+                    setErrorOpen(true)
+                })
+        }
     })
 
     const goToLogin = () => {
         navigate('/login')
     }
+
+    const handleClose = (
+        event: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        if (reason === 'clickaway') {
+            return
+        }
+
+        setErrorOpen(false)
+    }
+
+    const action = (
+        <React.Fragment>
+            <Button color="error" size="small" onClick={handleClose}>
+                UNDO
+            </Button>
+            <IconButton
+                size="small"
+                aria-label="close"
+                color="error"
+                onClick={handleClose}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+        </React.Fragment>
+    )
 
     return (
         <div className="registerForm">
@@ -70,6 +115,17 @@ const Register = () => {
                             id="password"
                             name="password"
                             label="Password"
+                        />
+
+                        <span>{'    '}</span>
+
+                        <TextField
+                            variant="filled"
+                            {...register('confirmPassword')}
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            label="Confirm Password"
                         />
 
                         <br />
@@ -119,6 +175,13 @@ const Register = () => {
                     </form>
                 </div>
             </div>
+            <Snackbar
+                open={errorOpen}
+                autoHideDuration={2000}
+                onClose={handleClose}
+                message={errorMessage}
+                action={action}
+            />
         </div>
     )
 }

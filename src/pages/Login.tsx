@@ -33,8 +33,6 @@ const Login = (props: any) => {
     }
 
     const onSubmit = handleSubmit(async (data) => {
-        alert(JSON.stringify(data))
-
         await axios
             .post<UserResponse>('http://localhost:8080/login', data, {
                 headers: {
@@ -50,17 +48,20 @@ const Login = (props: any) => {
             .catch((error) => {
                 console.log(error)
                 setErrorMessage(error.response.data.errors)
-                setErrorOpen(true);
+                setErrorOpen(true)
             })
     })
 
-    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    const handleClose = (
+        event: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
         if (reason === 'clickaway') {
-          return;
+            return
         }
-    
-        setErrorOpen(false);
-      };
+
+        setErrorOpen(false)
+    }
 
     const action = (
         <React.Fragment>
